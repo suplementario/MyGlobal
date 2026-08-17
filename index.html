@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MY GLOBAL · Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== PALETA EXCLUSIVA ===== */
+        :root {
+            --azul-oscuro: #001f66;
+            --azul-claro: #0055ff;
+            --oro-base: #d4af37;
+            --oro-brillo: #fff5c2;
+
+            --bg-loyal: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f4f6fa;
+            --blanco: #ffffff;
+            --texto-principal: #001f66;
+            --texto-secundario: #4a5c7a;
+            --border-color: #e0e4ed;
+            --sombra: 0 4px 20px rgba(0, 31, 102, 0.08);
+            --sombra-hover: 0 8px 30px rgba(0, 85, 255, 0.12);
+            --verde-meta: #00a86b;
+            --rojo-alerta: #dc3545;
+            --celeste-persistencia: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--bg-loyal);
+            padding: 20px;
+            min-height: 100vh;
+            color: var(--texto-principal);
+        }
+
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+            padding: 0 6px;
+            gap: 12px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-area .logo-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--azul-oscuro);
+            background: var(--oro-brillo);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-area .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .logo-area h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            background: var(--bg-input);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            color: var(--texto-secundario);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge .badge-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge i {
+            color: var(--azul-claro);
+        }
+
+        .status-badge .badge-item .label {
+            font-weight: 300;
+            opacity: 0.7;
+        }
+
+        .status-badge .badge-item .value {
+            font-weight: 700;
+            color: var(--azul-oscuro);
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .header-right {
+                justify-content: center;
+            }
+            .status-badge {
+                justify-content: center;
+            }
+        }
+
+        /* FILTROS */
+        .filters {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 16px;
+            background: var(--bg-card);
+            padding: 18px 22px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--sombra);
+            align-items: end;
+        }
+
+        .filters .group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+        }
+
+        .filters label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--azul-oscuro);
+        }
+
+        .filters select {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-input);
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--texto-principal);
+            outline: none;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .filters select:focus {
+            border-color: var(--azul-claro);
+            box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.15);
+        }
+
+        .multiselect {
+            position: relative;
+            width: 100%;
+        }
+
+        .multiselect .select-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: 0.2s;
+            justify-content: space-between;
+        }
+
+        .multiselect .select-box:hover {
+            border-color: var(--azul-claro);
+        }
+
+        .multiselect .select-box:focus-within {
+            border-color: var(--azul-claro);
+            box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.12);
+        }
+
+        .multiselect .select-box .selected-text {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--texto-principal);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .multiselect .select-box .arrow {
+            color: var(--azul-oscuro);
+            font-size: 14px;
+            margin-left: 8px;
+            transition: transform 0.2s;
+        }
+
+        .multiselect .options {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 1000;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 8px 0;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+            min-width: 180px;
+            width: 100%;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .multiselect .options.open {
+            display: block;
+        }
+
+        .multiselect .options .option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            cursor: pointer;
+            transition: 0.15s;
+            color: var(--texto-principal);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .multiselect .options .option-item:hover {
+            background: var(--oro-brillo);
+        }
+
+        .multiselect .options .option-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--azul-claro);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .multiselect .options .option-item label {
+            cursor: pointer;
+            flex: 1;
+            color: var(--texto-principal);
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .multiselect .options .option-item.todos {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 4px;
+            padding-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .multiselect .options::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .multiselect .options::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 4px;
+        }
+
+        .multiselect .options::-webkit-scrollbar-thumb {
+            background: var(--azul-claro);
+            border-radius: 4px;
+        }
+
+        .filters .clear-btn {
+            background: var(--oro-base);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--azul-oscuro);
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-self: end;
+            align-self: end;
+            height: 44px;
+            white-space: nowrap;
+            border: 1px solid var(--oro-base);
+        }
+
+        .filters .clear-btn:hover {
+            background: var(--oro-brillo);
+            border-color: var(--oro-base);
+            transform: scale(1.02);
+            color: var(--azul-oscuro);
+        }
+
+        @media (max-width: 1100px) {
+            .filters {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .filters {
+                grid-template-columns: 1fr;
+            }
+            .filters .clear-btn {
+                justify-self: stretch;
+            }
+        }
+
+        /* META CONTAINER */
+        .meta-container {
+            background: var(--bg-card);
+            color: var(--texto-principal);
+            padding: 20px 25px;
+            border-radius: 15px;
+            margin-bottom: 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--sombra);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .meta-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .meta-top .info-mes-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .meta-top .info-badge {
+            background: var(--azul-oscuro);
+            color: var(--blanco);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .meta-top .healthspring-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
+        .meta-top .healthspring-badge {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--texto-principal);
+        }
+
+        .meta-top .healthspring-badge i {
+            margin-right: 4px;
+            color: var(--azul-claro);
+        }
+
+        .healthspring-badge.terminado {
+            border-color: var(--rojo-alerta);
+            color: var(--rojo-alerta);
+            background: rgba(220, 53, 69, 0.04);
+        }
+        .healthspring-badge.terminado i {
+            color: var(--rojo-alerta);
+        }
+
+        .healthspring-badge.en-curso {
+            border-color: var(--azul-claro);
+            color: var(--azul-claro);
+            background: rgba(0, 85, 255, 0.04);
+        }
+        .healthspring-badge.en-curso i {
+            color: var(--azul-claro);
+        }
+
+        .healthspring-badge.no-iniciado {
+            border-color: var(--texto-secundario);
+            color: var(--texto-secundario);
+            background: rgba(74, 92, 122, 0.04);
+        }
+        .healthspring-badge.no-iniciado i {
+            color: var(--texto-secundario);
+        }
+
+        .meta-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 4px;
+        }
+
+        .meta-center h2 {
+            font-size: 24px;
+            color: var(--azul-oscuro);
+            margin: 0;
+        }
+
+        .meta-center h2 span {
+            color: var(--oro-base);
+        }
+
+        .meta-center .tiempo-texto {
+            font-size: 13px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--texto-secundario);
+            margin: 0;
+        }
+
+        .countdown-grid {
+            display: flex;
+            gap: 20px;
+            margin-top: 6px;
+        }
+
+        .time-box {
+            background: var(--bg-input);
+            padding: 12px 20px;
+            border-radius: 12px;
+            min-width: 80px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--azul-oscuro);
+            line-height: 1.2;
+        }
+
+        .time-box label {
+            color: var(--texto-secundario);
+            font-size: 10px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 700px) {
+            .meta-top {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .meta-top .info-mes-grid {
+                justify-content: center;
+            }
+            .meta-top .healthspring-wrapper {
+                align-items: center;
+            }
+            .meta-top .healthspring-badge {
+                white-space: normal;
+                text-align: center;
+            }
+            .countdown-grid {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .time-box {
+                min-width: 60px;
+                padding: 8px 14px;
+            }
+            .time-box span {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .meta-center h2 {
+                font-size: 20px;
+            }
+            .time-box {
+                min-width: 50px;
+                padding: 6px 10px;
+            }
+            .time-box span {
+                font-size: 18px;
+            }
+        }
+
+        /* ===== INDICADORES ===== */
+        .indicadores-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .indicador-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px 30px;
+            min-width: 160px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--sombra);
+            transition: 0.2s;
+            flex: 0 1 auto;
+        }
+
+        .indicador-card:hover {
+            border-color: var(--oro-base);
+            box-shadow: var(--sombra-hover);
+            background: var(--oro-brillo);
+        }
+
+        .indicador-card .numero {
+            font-size: 44px;
+            font-weight: 700;
+            color: var(--oro-base);
+            line-height: 1.1;
+            letter-spacing: 0.5px;
+        }
+
+        .indicador-card .etiqueta {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--texto-secundario);
+            opacity: 0.7;
+            margin-top: 6px;
+        }
+
+        /* Tarjeta Agente Productor */
+        .indicador-card.agente-productor {
+            min-width: 200px;
+            padding: 20px 30px;
+            border-color: var(--oro-base);
+            background: var(--oro-brillo);
+        }
+
+        .indicador-card.agente-productor:hover {
+            background: var(--blanco);
+            border-color: var(--azul-claro);
+        }
+
+        .indicador-card.agente-productor .nombre {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            margin-bottom: 2px;
+        }
+
+        .indicador-card.agente-productor .medalla {
+            font-size: 28px;
+            color: var(--oro-base);
+            margin-right: 6px;
+        }
+
+        .indicador-card.agente-productor .detalle {
+            font-size: 14px;
+            color: var(--texto-secundario);
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        .indicador-card.agente-productor .detalle span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .indicador-card.agente-productor .detalle i {
+            color: var(--oro-base);
+        }
+
+        .indicador-card.agente-productor .etiqueta {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        .indicador-card.agente-productor .placeholder {
+            font-size: 16px;
+            color: var(--texto-secundario);
+            opacity: 0.3;
+            padding: 10px 0;
+        }
+
+        /* Botones Brochure y Claims */
+        .indicador-card.boton-card {
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--azul-oscuro);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 24px;
+            min-width: 140px;
+        }
+
+        .indicador-card.boton-card:hover {
+            background: var(--oro-brillo);
+            border-color: var(--oro-base);
+            transform: translateY(-3px);
+        }
+
+        .indicador-card.boton-card i {
+            font-size: 28px;
+            color: var(--azul-claro);
+            margin-bottom: 6px;
+        }
+
+        .indicador-card.boton-card .etiqueta {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--azul-oscuro);
+            opacity: 1;
+            margin-top: 0;
+        }
+
+        @media (max-width: 700px) {
+            .indicadores-container {
+                gap: 16px;
+            }
+            .indicador-card {
+                padding: 18px 20px;
+                min-width: 130px;
+            }
+            .indicador-card .numero {
+                font-size: 34px;
+            }
+            .indicador-card.agente-productor {
+                min-width: 160px;
+                padding: 16px 20px;
+            }
+            .indicador-card.agente-productor .nombre {
+                font-size: 16px;
+            }
+            .indicador-card.agente-productor .medalla {
+                font-size: 22px;
+            }
+            .indicador-card.boton-card {
+                padding: 14px 18px;
+                min-width: 110px;
+            }
+            .indicador-card.boton-card i {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .indicador-card {
+                padding: 14px 16px;
+                min-width: 100px;
+                flex: 1 1 45%;
+            }
+            .indicador-card .numero {
+                font-size: 28px;
+            }
+            .indicador-card.agente-productor {
+                flex: 1 1 100%;
+                min-width: unset;
+            }
+            .indicador-card.agente-productor .detalle {
+                font-size: 13px;
+                gap: 10px;
+            }
+            .indicador-card.agente-productor .medalla {
+                font-size: 20px;
+            }
+            .indicador-card.agente-productor .placeholder {
+                font-size: 14px;
+            }
+            .indicador-card.boton-card {
+                flex: 1 1 45%;
+                padding: 12px 14px;
+            }
+            .indicador-card.boton-card i {
+                font-size: 20px;
+            }
+        }
+
+        /* TARJETAS DE AGENTES */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .agent-card {
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 20px 18px;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: var(--sombra);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .agent-card:hover {
+            border-color: var(--oro-base);
+            transform: translateY(-4px);
+            box-shadow: var(--sombra-hover);
+            background: var(--oro-brillo);
+        }
+
+        .agent-card .nombre {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--azul-oscuro);
+        }
+
+        .agent-card .id {
+            font-size: 13px;
+            color: var(--texto-secundario);
+            margin-top: -2px;
+        }
+
+        .agent-card .nap-total {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--oro-base);
+            margin-top: 2px;
+        }
+
+        .agent-card .label-meta {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--texto-secundario);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .barra-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .barra-meta .barra-fondo {
+            flex: 1;
+            height: 10px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            overflow: hidden;
+            min-width: 60px;
+        }
+
+        .barra-meta .barra-lleno {
+            height: 100%;
+            border-radius: 10px;
+            background: var(--azul-claro);
+            transition: width 0.6s ease;
+        }
+
+        .barra-meta .barra-lleno.completo {
+            background: var(--verde-meta);
+        }
+
+        .barra-meta .porcentaje {
+            font-weight: 700;
+            font-size: 14px;
+            min-width: 55px;
+            text-align: right;
+            color: var(--texto-principal);
+        }
+
+        .barra-meta .porcentaje.completo {
+            color: var(--verde-meta);
+        }
+
+        .barra-meta .faltante {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--azul-claro);
+        }
+        .barra-meta .faltante.completo {
+            color: var(--verde-meta);
+        }
+
+        .agent-card .bono-check {
+            color: var(--verde-meta);
+            font-size: 26px;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        .agent-card .persistencia {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--celeste-persistencia);
+        }
+
+        .agent-card .persistencia.bajo {
+            color: var(--rojo-alerta);
+        }
+
+        .agent-card .row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .agent-card .row .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--texto-secundario);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .agent-card .extra-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 20px;
+            background: var(--bg-input);
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-top: 4px;
+        }
+
+        .agent-card .extra-metrics .metric-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+        .agent-card .extra-metrics .metric-item i {
+            color: var(--oro-base);
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+        }
+        .agent-card .extra-metrics .metric-item .metric-label {
+            color: var(--texto-secundario);
+        }
+        .agent-card .extra-metrics .metric-item .metric-value {
+            font-weight: 600;
+            color: var(--texto-principal);
+        }
+
+        .footer-note {
+            text-align: right;
+            font-size: 13px;
+            color: var(--texto-secundario);
+            padding: 8px 20px 12px;
+            opacity: 0.7;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--texto-secundario);
+        }
+
+        .loading i {
+            font-size: 36px;
+            color: var(--oro-base);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .no-agentes {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--texto-secundario);
+            font-size: 16px;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 12px;
+            }
+            .logo-area h1 {
+                font-size: 20px;
+            }
+            .logo-area .logo-icon {
+                width: 48px;
+                height: 48px;
+            }
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+            .barra-meta .faltante {
+                font-size: 12px;
+            }
+            .barra-meta .porcentaje {
+                font-size: 13px;
+                min-width: 45px;
+            }
+            .agent-card .extra-metrics {
+                flex-direction: column;
+                gap: 6px;
+            }
+            .status-badge {
+                gap: 10px;
+            }
+            .status-badge .badge-item {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard" id="app">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <img src="MY Globla logo1.jpg" alt="MY GLOBAL SOLUTIONS GROUP" />
+                </div>
+                <h1>MY GLOBAL SOLUTIONS GROUP</h1>
+            </div>
+            <div class="header-right">
+                <div class="status-badge">
+                    <span class="badge-item"><i class="fas fa-circle"></i> <span class="label">Registros:</span> <span class="value" id="recordCount">0</span></span>
+                    <span class="badge-item"><i class="fas fa-sync-alt"></i> <span id="syncStatus">Sincronizado</span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- FILTROS -->
+        <div class="filters" id="filters">
+            <div class="group">
+                <label><i class="fas fa-calendar-alt"></i> Mes HealthSpring</label>
+                <select id="filterMes">
+                    <option value="6">Mes 6 (01/06 – 05/07)</option>
+                    <option value="7" selected>Mes 7 (06/07 – 02/08)</option>
+                    <option value="8">Mes 8 (03/08 – 06/09)</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label><i class="fas fa-user-tie"></i> Agente</label>
+                <select id="filterAgente"><option value="">Todos</option></select>
+            </div>
+
+            <div class="group">
+                <label><i class="fas fa-tag"></i> Producto</label>
+                <div class="multiselect" id="multiselectProducto">
+                    <div class="select-box" id="selectBoxProducto">
+                        <span class="selected-text" id="selectedTextProducto">Todos</span>
+                        <span class="arrow" id="arrowProducto"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="options" id="optionsProducto"></div>
+                </div>
+            </div>
+
+            <div class="group">
+                <label><i class="fas fa-circle"></i> Estatus</label>
+                <div class="multiselect" id="multiselectEstatus">
+                    <div class="select-box" id="selectBoxEstatus">
+                        <span class="selected-text" id="selectedTextEstatus">Todos</span>
+                        <span class="arrow" id="arrowEstatus"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="options" id="optionsEstatus"></div>
+                </div>
+            </div>
+
+            <button class="clear-btn" id="clearFilters"><i class="fas fa-undo-alt"></i> Limpiar todo</button>
+        </div>
+
+        <!-- META CONTAINER -->
+        <div class="meta-container">
+            <div class="meta-top">
+                <div class="info-mes-grid">
+                    <div class="info-badge" id="periodoBadge">HealthSpring 7 (06/07 – 02/08)</div>
+                    <div class="info-badge" id="semanasMes">Semanas del Mes: 4</div>
+                </div>
+                <div class="healthspring-wrapper" id="healthspringBadges">
+                    <!-- Los badges se generan dinámicamente con JS -->
+                </div>
+            </div>
+
+            <div class="meta-center">
+                <h2>Meta mensual: <span>10,000 NAP</span> por agente</h2>
+                <p class="tiempo-texto" id="mensajeTiempo">Tiempo restante para terminar el mes:</p>
+                <div class="countdown-grid">
+                    <div class="time-box"><span id="days">00</span><label>Días</label></div>
+                    <div class="time-box"><span id="hours">00</span><label>Horas</label></div>
+                    <div class="time-box"><span id="mins">00</span><label>Minutos</label></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== INDICADORES ===== -->
+        <div class="indicadores-container">
+            <div class="indicador-card">
+                <div class="numero" id="totalNapGlobal">0.00</div>
+                <div class="etiqueta">Total NAP</div>
+            </div>
+            <div class="indicador-card">
+                <div class="numero" id="totalPolizasGlobal">0</div>
+                <div class="etiqueta">Pólizas</div>
+            </div>
+            <!-- AGENTE PRODUCTOR -->
+            <div class="indicador-card agente-productor" id="topAgenteCard">
+                <div id="topAgenteContent" style="display:none;">
+                    <div class="nombre">
+                        <span class="medalla">🏅</span> <span id="topAgenteNombre">—</span>
+                    </div>
+                    <div class="detalle">
+                        <span><i class="fas fa-coins"></i> <span id="topAgenteNap">0.00</span></span>
+                        <span><i class="fas fa-file-invoice"></i> <span id="topAgentePolizas">0</span></span>
+                    </div>
+                    <div class="etiqueta">Agente Productor</div>
+                </div>
+                <div id="topAgentePlaceholder" style="display:block;">
+                    <div class="placeholder">—</div>
+                    <div class="etiqueta">Agente Productor</div>
+                </div>
+            </div>
+            <!-- Brochure -->
+            <a href="https://drive.google.com/drive/folders/12Qy0I82LXyqkpwWFIyaM0_aNHaMw6Jjl?usp=sharing" target="_blank" class="indicador-card boton-card">
+                <i class="fas fa-book-open"></i>
+                <span class="etiqueta">Brochure</span>
+            </a>
+            <!-- Claims -->
+            <a href="https://drive.google.com/drive/folders/1QLCrmv_bvRl7NyVA0Qmt05Wh1pjHTKfi?usp=sharing" target="_blank" class="indicador-card boton-card">
+                <i class="fas fa-file-alt"></i>
+                <span class="etiqueta">Claims</span>
+            </a>
+        </div>
+
+        <!-- TARJETAS DE AGENTES -->
+        <div class="agents-grid" id="agentsGrid">
+            <!-- Generado por JS -->
+        </div>
+
+        <div class="footer-note" id="footerNote">
+            <i class="far fa-calendar-alt"></i> Datos agrupados por agente · Mes 7 (Julio 2026)
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // CONFIGURACIÓN
+        // ================================================================
+        const API_URL =
+            'https://script.google.com/macros/s/AKfycby_K_tPPNRJXvhj8IMYlCHSCmjFl1zXzYrMTikTwRSBDTO1GHlmuAVCwfl-VfOhS7uZwA/exec';
+        const META_NAP = 10000;
+
+        const MESES_HEALTHSPRING = {
+            6: { inicio: new Date(2026, 5, 1), fin: new Date(2026, 6, 5) },
+            7: { inicio: new Date(2026, 6, 6), fin: new Date(2026, 7, 2) },
+            8: { inicio: new Date(2026, 7, 3), fin: new Date(2026, 8, 6) }
+        };
+
+        const $ = (id) => document.getElementById(id);
+        const recordCount = $('recordCount');
+        const totalNapGlobal = $('totalNapGlobal');
+        const totalPolizasGlobal = $('totalPolizasGlobal');
+        const topAgenteNombre = $('topAgenteNombre');
+        const topAgenteNap = $('topAgenteNap');
+        const topAgentePolizas = $('topAgentePolizas');
+        const topAgenteContent = $('topAgenteContent');
+        const topAgentePlaceholder = $('topAgentePlaceholder');
+        const agentsGrid = $('agentsGrid');
+
+        const filterMes = $('filterMes');
+        const filterAgente = $('filterAgente');
+        const clearBtn = $('clearFilters');
+
+        const selectBoxProducto = $('selectBoxProducto');
+        const selectedTextProducto = $('selectedTextProducto');
+        const optionsProducto = $('optionsProducto');
+        const arrowProducto = $('arrowProducto');
+
+        const selectBoxEstatus = $('selectBoxEstatus');
+        const selectedTextEstatus = $('selectedTextEstatus');
+        const optionsEstatus = $('optionsEstatus');
+        const arrowEstatus = $('arrowEstatus');
+
+        const periodoBadge = $('periodoBadge');
+        const mensajeTiempo = $('mensajeTiempo');
+        const daysSpan = $('days');
+        const hoursSpan = $('hours');
+        const minsSpan = $('mins');
+        const semanasBadge = $('semanasMes');
+        const footerNote = $('footerNote');
+        const healthspringBadges = $('healthspringBadges');
+
+        let allData = [];
+        let selectedStart = null;
+        let selectedEnd = null;
+        let mesSeleccionado = 7;
+
+        let productosSeleccionados = [];
+        let estatusSeleccionados = [];
+
+        // ================================================================
+        // UTILITIES
+        // ================================================================
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function esDVH(producto) {
+            if (!producto) return false;
+            const p = producto.trim().toUpperCase();
+            return p === 'DVH' || p === 'D V H' || p.includes('D V H');
+        }
+
+        function formatNumber(val) {
+            if (val === undefined || val === null) return '0.00';
+            return Number(val).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function formatDateDisplay(d) {
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function parseDate(str) {
+            if (!str) return null;
+            str = str.trim();
+            let d = new Date(str);
+            if (!isNaN(d)) {
+                d.setHours(0, 0, 0, 0);
+                return d;
+            }
+            const separators = ['/', '-', '.'];
+            let parts = null;
+            for (let s of separators) {
+                const temp = str.split(s);
+                if (temp.length === 3) {
+                    parts = temp;
+                    break;
+                }
+            }
+            if (!parts) return null;
+
+            let month = parseInt(parts[0], 10);
+            let day = parseInt(parts[1], 10);
+            let year = parseInt(parts[2], 10);
+            if (year < 100) year += 2000;
+
+            if (month > 12) {
+                const temp = month;
+                month = day;
+                day = temp;
+            }
+            if (day > 31) {
+                const temp = month;
+                month = day;
+                day = temp;
+            }
+            if (day > 12 && month <= 12) {
+                const temp = month;
+                month = day;
+                day = temp;
+            }
+            if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+
+            const result = new Date(year, month - 1, day);
+            result.setHours(0, 0, 0, 0);
+            return result;
+        }
+
+        function obtenerMesActual() {
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const meses = Object.keys(MESES_HEALTHSPRING).map(Number).sort((a, b) => a - b);
+            for (const m of meses) {
+                const { inicio, fin } = MESES_HEALTHSPRING[m];
+                const inicioDate = new Date(inicio);
+                inicioDate.setHours(0, 0, 0, 0);
+                const finDate = new Date(fin);
+                finDate.setHours(23, 59, 59, 999);
+                if (hoy >= inicioDate && hoy <= finDate) return m;
+            }
+            const primerMes = meses[0];
+            const primerInicio = new Date(MESES_HEALTHSPRING[primerMes].inicio);
+            primerInicio.setHours(0, 0, 0, 0);
+            if (hoy < primerInicio) return primerMes;
+            const ultimoMes = meses[meses.length - 1];
+            const ultimoFin = new Date(MESES_HEALTHSPRING[ultimoMes].fin);
+            ultimoFin.setHours(23, 59, 59, 999);
+            if (hoy > ultimoFin) return ultimoMes;
+            return 7;
+        }
+
+        function updateCountdown() {
+            const mes = parseInt(filterMes.value, 10);
+            const rango = MESES_HEALTHSPRING[mes];
+            if (!rango) return;
+            const fin = new Date(rango.fin);
+            fin.setHours(23, 59, 59, 999);
+            const now = new Date().getTime();
+            const finTime = fin.getTime();
+            const diff = finTime - now;
+
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                daysSpan.innerText = String(days).padStart(2, '0');
+                hoursSpan.innerText = String(hours).padStart(2, '0');
+                minsSpan.innerText = String(mins).padStart(2, '0');
+                mensajeTiempo.textContent = 'Tiempo restante para terminar el mes:';
+            } else {
+                daysSpan.innerText = '00';
+                hoursSpan.innerText = '00';
+                minsSpan.innerText = '00';
+                mensajeTiempo.textContent = '⚠️ Mes finalizado';
+            }
+        }
+        setInterval(updateCountdown, 1000);
+
+        function calcularSemanas(inicio, fin) {
+            const start = new Date(inicio);
+            const end = new Date(fin);
+            end.setHours(23, 59, 59, 999);
+            const diffTime = end.getTime() - start.getTime();
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            return Math.ceil(diffDays / 7);
+        }
+
+        function actualizarSemanas() {
+            const mes = parseInt(filterMes.value, 10);
+            const rango = MESES_HEALTHSPRING[mes];
+            if (!rango) return;
+            const semanas = calcularSemanas(rango.inicio, rango.fin);
+            semanasBadge.textContent = `Semanas del Mes: ${semanas}`;
+        }
+
+        function actualizarBadgesHealthSpring() {
+            if (!healthspringBadges) return;
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            let html = '';
+            const meses = Object.keys(MESES_HEALTHSPRING).map(Number).sort((a, b) => a - b);
+            for (const m of meses) {
+                const { inicio, fin } = MESES_HEALTHSPRING[m];
+                const inicioDate = new Date(inicio);
+                inicioDate.setHours(0, 0, 0, 0);
+                const finDate = new Date(fin);
+                finDate.setHours(23, 59, 59, 999);
+                let estado = '', clase = '';
+                if (hoy < inicioDate) {
+                    estado = 'No Iniciado';
+                    clase = 'no-iniciado';
+                } else if (hoy >= inicioDate && hoy <= finDate) {
+                    estado = 'En Curso';
+                    clase = 'en-curso';
+                } else {
+                    estado = 'Terminado';
+                    clase = 'terminado';
+                }
+                const inicioStr = formatDateDisplay(inicioDate);
+                const finStr = formatDateDisplay(finDate);
+                html += `
+                    <div class="healthspring-badge ${clase}">
+                        <i class="fas fa-calendar-check"></i> HealthSpring Mes ${m}: ${inicioStr} – ${finStr} ${estado}
+                    </div>
+                `;
+            }
+            healthspringBadges.innerHTML = html;
+        }
+
+        async function fetchData() {
+            try {
+                const res = await fetch(API_URL);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const json = await res.json();
+                allData = Array.isArray(json) ? json : (json.data || []);
+                console.log('📊 Datos cargados:', allData.length, 'registros');
+
+                const productos = [...new Set(allData.map(r => r.PRODUCTO).filter(Boolean))].sort();
+                const estatuses = [...new Set(allData.map(r => r.ESTATUS).filter(Boolean))].sort();
+                productosSeleccionados = productos.slice();
+                estatusSeleccionados = estatuses.slice();
+
+                return allData;
+            } catch (err) {
+                console.error('❌ Error:', err);
+                agentsGrid.innerHTML = `<div class="no-agentes">Error al cargar datos: ${err.message}</div>`;
+                return [];
+            }
+        }
+
+        function esJohanGonzalez(nombre) {
+            if (!nombre) return false;
+            const n = nombre.trim().toLowerCase();
+            return n.includes('johan gonzalez') || n.includes('johan gonzales') || n.includes('johan gonzáles');
+        }
+
+        function recalcularAgenteProductor() {
+            const mes = parseInt(filterMes.value, 10);
+            const rango = MESES_HEALTHSPRING[mes];
+            if (!rango) return;
+
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const fin = new Date(rango.fin);
+            fin.setHours(0, 0, 0, 0);
+            const diffDays = Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 4) {
+                topAgenteContent.style.display = 'none';
+                topAgentePlaceholder.style.display = 'block';
+                return;
+            }
+
+            topAgenteContent.style.display = 'block';
+            topAgentePlaceholder.style.display = 'none';
+
+            let datosFiltrados = allData;
+            if (selectedStart && selectedEnd) {
+                const start = new Date(selectedStart);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(selectedEnd);
+                end.setHours(23, 59, 59, 999);
+                datosFiltrados = allData.filter(row => {
+                    const emision = row.EMISION ? parseDate(row.EMISION) : null;
+                    if (!emision) return false;
+                    const emisionTime = emision.getTime();
+                    return emisionTime >= start.getTime() && emisionTime <= end.getTime();
+                });
+            }
+
+            const agentMap = {};
+            datosFiltrados.forEach(row => {
+                const estatus = (row.ESTATUS || '').toLowerCase();
+                const isActive = estatus.includes('active');
+                const isDvh = esDVH(row.PRODUCTO);
+                if (!isActive && !isDvh) return;
+
+                const agente = row.AGENTE || 'Sin nombre';
+                if (esJohanGonzalez(agente)) return;
+
+                const nap = Number(row.NAP) || 0;
+                const polizas = Number(row['CANTIDAD DE POLIZAS']) || 0;
+                if (!agentMap[agente]) {
+                    agentMap[agente] = { nap: 0, polizas: 0 };
+                }
+                agentMap[agente].nap += nap;
+                agentMap[agente].polizas += polizas;
+            });
+
+            let topAgente = null;
+            let maxNap = -1;
+            for (const [nombre, datos] of Object.entries(agentMap)) {
+                if (datos.nap > maxNap) {
+                    maxNap = datos.nap;
+                    topAgente = { nombre, nap: datos.nap, polizas: datos.polizas };
+                }
+            }
+
+            if (topAgente && topAgente.nap > 0) {
+                topAgenteNombre.textContent = topAgente.nombre;
+                topAgenteNap.textContent = formatNumber(topAgente.nap);
+                topAgentePolizas.textContent = topAgente.polizas;
+            } else {
+                topAgenteNombre.textContent = '—';
+                topAgenteNap.textContent = '0.00';
+                topAgentePolizas.textContent = '0';
+            }
+        }
+
+        function initMultiselectEvents() {
+            selectBoxProducto.addEventListener('click', function(e) {
+                e.stopPropagation();
+                optionsProducto.classList.toggle('open');
+                const icon = arrowProducto.querySelector('i');
+                icon.className = optionsProducto.classList.contains('open') ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+            });
+            document.addEventListener('click', function(e) {
+                if (!document.getElementById('multiselectProducto').contains(e.target)) {
+                    optionsProducto.classList.remove('open');
+                    arrowProducto.querySelector('i').className = 'fas fa-chevron-down';
+                }
+            });
+
+            selectBoxEstatus.addEventListener('click', function(e) {
+                e.stopPropagation();
+                optionsEstatus.classList.toggle('open');
+                const icon = arrowEstatus.querySelector('i');
+                icon.className = optionsEstatus.classList.contains('open') ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+            });
+            document.addEventListener('click', function(e) {
+                if (!document.getElementById('multiselectEstatus').contains(e.target)) {
+                    optionsEstatus.classList.remove('open');
+                    arrowEstatus.querySelector('i').className = 'fas fa-chevron-down';
+                }
+            });
+        }
+
+        function populateFilterOptions(data) {
+            const setOptions = (select, values) => {
+                const current = select.value;
+                select.innerHTML = '<option value="">Todos</option>';
+                values.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v;
+                    opt.textContent = v;
+                    select.appendChild(opt);
+                });
+                if ([...select.options].some(o => o.value === current)) select.value = current;
+            };
+            setOptions(filterAgente, [...new Set(data.map(r => r.AGENTE).filter(Boolean))].sort());
+
+            const productos = [...new Set(data.map(r => r.PRODUCTO).filter(Boolean))].sort();
+            const optionsContainer = optionsProducto;
+            optionsContainer.innerHTML = '';
+            const todosDiv = document.createElement('div');
+            todosDiv.className = 'option-item todos';
+            const todosCheck = document.createElement('input');
+            todosCheck.type = 'checkbox';
+            todosCheck.id = 'todos_producto';
+            todosCheck.checked = (productosSeleccionados.length === productos.length && productos.length > 0);
+            const todosLabel = document.createElement('label');
+            todosLabel.htmlFor = 'todos_producto';
+            todosLabel.textContent = 'Todos';
+            todosDiv.appendChild(todosCheck);
+            todosDiv.appendChild(todosLabel);
+            optionsContainer.appendChild(todosDiv);
+
+            productos.forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                const check = document.createElement('input');
+                check.type = 'checkbox';
+                check.value = v;
+                check.id = `producto_${v}`;
+                check.checked = productosSeleccionados.includes(v);
+                const lbl = document.createElement('label');
+                lbl.htmlFor = `producto_${v}`;
+                lbl.textContent = v;
+                div.appendChild(check);
+                div.appendChild(lbl);
+                optionsContainer.appendChild(div);
+            });
+
+            optionsContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    const isTodos = this.id === 'todos_producto';
+                    if (isTodos) {
+                        const allChecks = optionsContainer.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
+                        allChecks.forEach(c => c.checked = this.checked);
+                        productosSeleccionados = this.checked ? productos.slice() : [];
+                    } else {
+                        const todosCheckbox = optionsContainer.querySelector('#todos_producto');
+                        if (!this.checked && todosCheckbox) todosCheckbox.checked = false;
+                        const individualChecks = optionsContainer.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
+                        const allChecked = Array.from(individualChecks).every(c => c.checked);
+                        if (allChecked && todosCheckbox) todosCheckbox.checked = true;
+                        const selected = [];
+                        individualChecks.forEach(c => { if (c.checked) selected.push(c.value); });
+                        productosSeleccionados = selected;
+                    }
+                    updateSelectedTextProducto();
+                    applyFilters();
+                });
+            });
+            updateSelectedTextProducto();
+
+            const estatuses = [...new Set(data.map(r => r.ESTATUS).filter(Boolean))].sort();
+            const optionsContainerE = optionsEstatus;
+            optionsContainerE.innerHTML = '';
+            const todosDivE = document.createElement('div');
+            todosDivE.className = 'option-item todos';
+            const todosCheckE = document.createElement('input');
+            todosCheckE.type = 'checkbox';
+            todosCheckE.id = 'todos_estatus';
+            todosCheckE.checked = (estatusSeleccionados.length === estatuses.length && estatuses.length > 0);
+            const todosLabelE = document.createElement('label');
+            todosLabelE.htmlFor = 'todos_estatus';
+            todosLabelE.textContent = 'Todos';
+            todosDivE.appendChild(todosCheckE);
+            todosDivE.appendChild(todosLabelE);
+            optionsContainerE.appendChild(todosDivE);
+
+            estatuses.forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                const check = document.createElement('input');
+                check.type = 'checkbox';
+                check.value = v;
+                check.id = `estatus_${v}`;
+                check.checked = estatusSeleccionados.includes(v);
+                const lbl = document.createElement('label');
+                lbl.htmlFor = `estatus_${v}`;
+                lbl.textContent = v;
+                div.appendChild(check);
+                div.appendChild(lbl);
+                optionsContainerE.appendChild(div);
+            });
+
+            optionsContainerE.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    const isTodos = this.id === 'todos_estatus';
+                    if (isTodos) {
+                        const allChecks = optionsContainerE.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
+                        allChecks.forEach(c => c.checked = this.checked);
+                        estatusSeleccionados = this.checked ? estatuses.slice() : [];
+                    } else {
+                        const todosCheckbox = optionsContainerE.querySelector('#todos_estatus');
+                        if (!this.checked && todosCheckbox) todosCheckbox.checked = false;
+                        const individualChecks = optionsContainerE.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
+                        const allChecked = Array.from(individualChecks).every(c => c.checked);
+                        if (allChecked && todosCheckbox) todosCheckbox.checked = true;
+                        const selected = [];
+                        individualChecks.forEach(c => { if (c.checked) selected.push(c.value); });
+                        estatusSeleccionados = selected;
+                    }
+                    updateSelectedTextEstatus();
+                    applyFilters();
+                });
+            });
+            updateSelectedTextEstatus();
+        }
+
+        function updateSelectedTextProducto() {
+            const productos = [...new Set(allData.map(r => r.PRODUCTO).filter(Boolean))].sort();
+            if (productosSeleccionados.length === 0 || productosSeleccionados.length === productos.length) {
+                selectedTextProducto.textContent = 'Todos';
+            } else if (productosSeleccionados.length <= 2) {
+                selectedTextProducto.textContent = productosSeleccionados.join(', ');
+            } else {
+                selectedTextProducto.textContent = `${productosSeleccionados.length} seleccionados`;
+            }
+        }
+
+        function updateSelectedTextEstatus() {
+            const estatuses = [...new Set(allData.map(r => r.ESTATUS).filter(Boolean))].sort();
+            if (estatusSeleccionados.length === 0 || estatusSeleccionados.length === estatuses.length) {
+                selectedTextEstatus.textContent = 'Todos';
+            } else if (estatusSeleccionados.length <= 2) {
+                selectedTextEstatus.textContent = estatusSeleccionados.join(', ');
+            } else {
+                selectedTextEstatus.textContent = `${estatusSeleccionados.length} seleccionados`;
+            }
+        }
+
+        function actualizarMesSeleccionado() {
+            const mes = parseInt(filterMes.value, 10);
+            mesSeleccionado = mes;
+            const rango = MESES_HEALTHSPRING[mes];
+            if (!rango) return;
+
+            let inicio = new Date(rango.inicio);
+            let fin = new Date(rango.fin);
+
+            if (mes === 7 || mes === 8) {
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                if (hoy < fin) fin = hoy;
+            }
+
+            selectedStart = inicio;
+            selectedEnd = fin;
+
+            const inicioStr = formatDateDisplay(inicio);
+            const finStr = formatDateDisplay(fin);
+            const mesTexto = mes;
+            if (mes === 6) {
+                periodoBadge.textContent = `HealthSpring 6 (${inicioStr} – ${finStr})`;
+            } else if (mes === 7) {
+                const finReal = fin < MESES_HEALTHSPRING[7].fin ? ` (hasta ${finStr})` : '';
+                periodoBadge.textContent = `HealthSpring 7 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[7].fin)})${finReal}`;
+            } else if (mes === 8) {
+                const finReal = fin < MESES_HEALTHSPRING[8].fin ? ` (hasta ${finStr})` : '';
+                periodoBadge.textContent = `HealthSpring 8 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[8].fin)})${finReal}`;
+            }
+
+            footerNote.innerHTML = `<i class="far fa-calendar-alt"></i> Datos agrupados por agente · Mes ${mesTexto} (2026)`;
+
+            updateCountdown();
+            actualizarSemanas();
+            recalcularAgenteProductor();
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const agenteVal = filterAgente.value;
+            const productoVal = productosSeleccionados;
+            const estatusVal = estatusSeleccionados;
+
+            let filtered = allData.filter(row => {
+                if (agenteVal && row.AGENTE !== agenteVal) return false;
+                if (productoVal.length > 0 && !productoVal.includes(row.PRODUCTO)) return false;
+                if (estatusVal.length > 0 && !estatusVal.includes(row.ESTATUS)) return false;
+                return true;
+            });
+
+            if (selectedStart && selectedEnd) {
+                const start = new Date(selectedStart);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(selectedEnd);
+                end.setHours(23, 59, 59, 999);
+                filtered = filtered.filter(row => {
+                    const emision = row.EMISION ? parseDate(row.EMISION) : null;
+                    if (!emision) return false;
+                    const emisionTime = emision.getTime();
+                    return emisionTime >= start.getTime() && emisionTime <= end.getTime();
+                });
+            } else if (selectedStart) {
+                const start = new Date(selectedStart);
+                start.setHours(0, 0, 0, 0);
+                filtered = filtered.filter(row => {
+                    const emision = row.EMISION ? parseDate(row.EMISION) : null;
+                    if (!emision) return false;
+                    return emision.getTime() >= start.getTime();
+                });
+            }
+
+            renderDashboard(filtered);
+        }
+
+        function renderDashboard(data) {
+            let totalNap = 0;
+            let totalPolizas = 0;
+            data.forEach(row => {
+                totalNap += Number(row.NAP) || 0;
+                totalPolizas += Number(row['CANTIDAD DE POLIZAS']) || 0;
+            });
+
+            recordCount.textContent = data.length;
+            totalNapGlobal.textContent = formatNumber(totalNap);
+            totalPolizasGlobal.textContent = totalPolizas;
+
+            populateFilterOptions(data);
+            renderAgentCards(data);
+        }
+
+        function renderAgentCards(data) {
+            if (!data || data.length === 0) {
+                agentsGrid.innerHTML = `<div class="no-agentes">No hay agentes con estos filtros</div>`;
+                return;
+            }
+
+            const agentMap = {};
+            data.forEach(r => {
+                const name = r.AGENTE || 'Sin nombre';
+                if (!agentMap[name]) {
+                    agentMap[name] = {
+                        id: r['ID AGENTE'] || '—',
+                        totalPolizas: 0,
+                        totalNap: 0,
+                        napParaBono: 0,
+                        polizasNoPersistentes: 0,
+                        productos: {}
+                    };
+                }
+                const cantidad = Number(r['CANTIDAD DE POLIZAS']) || 0;
+                const nap = Number(r.NAP) || 0;
+                agentMap[name].totalPolizas += cantidad;
+                agentMap[name].totalNap += nap;
+
+                const estatus = (r.ESTATUS || '').toLowerCase();
+                const esActivaOPendiente = estatus.includes('active') || estatus.includes('pendiente');
+                const noEsDVH = !esDVH(r.PRODUCTO);
+                if (esActivaOPendiente && noEsDVH) {
+                    agentMap[name].napParaBono += nap;
+                }
+
+                const esNoPersistente = estatus.includes('termin') || estatus.includes('suspend') ||
+                    estatus.includes('cancel') || estatus.includes('lapse');
+                if (esNoPersistente) {
+                    agentMap[name].polizasNoPersistentes += cantidad;
+                }
+
+                const prod = r.PRODUCTO || 'Sin Producto';
+                if (!agentMap[name].productos[prod]) {
+                    agentMap[name].productos[prod] = 0;
+                }
+                agentMap[name].productos[prod] += nap;
+            });
+
+            const sortedEntries = Object.entries(agentMap).sort((a, b) => b[1].totalNap - a[1].totalNap);
+
+            let html = '';
+            sortedEntries.forEach(([name, info]) => {
+                const porcentajeNap = (info.totalNap / META_NAP) * 100;
+                const anchoNap = Math.min(porcentajeNap, 300);
+                const cumplioNap = info.totalNap >= META_NAP;
+                const napClase = cumplioNap ? 'completo' : '';
+
+                const faltante = Math.max(0, META_NAP - info.totalNap);
+                const faltanteTexto = cumplioNap ? 'Meta alcanzada' : `Faltan: ${formatNumber(faltante)}`;
+
+                const cumplioBono = info.napParaBono >= META_NAP;
+                const bonoHtml = cumplioBono ? `<span class="bono-check">✔</span>` : '';
+
+                let persistencia = 0;
+                let detallePersistencia = '(0/0)';
+                let persistenciaClase = '';
+                if (info.totalPolizas > 0) {
+                    persistencia = ((info.totalPolizas - info.polizasNoPersistentes) / info.totalPolizas) * 100;
+                    detallePersistencia = `(${info.totalPolizas}/${info.polizasNoPersistentes}) ${persistencia.toFixed(1)}%`;
+                    persistenciaClase = persistencia < 75 ? 'bajo' : '';
+                } else {
+                    detallePersistencia = '(0/0) 0.0%';
+                    persistenciaClase = 'bajo';
+                }
+
+                let maxNapProd = 0;
+                let estrella = 'N/A';
+                for (const [prod, nap] of Object.entries(info.productos)) {
+                    if (nap > maxNapProd) {
+                        maxNapProd = nap;
+                        estrella = prod;
+                    }
+                }
+
+                html += `
+                    <div class="agent-card">
+                        <div>
+                            <div class="nombre">${escHtml(name)}</div>
+                            <div class="id">ID: ${escHtml(info.id)}</div>
+                            <div class="nap-total">NAP Total: ${formatNumber(info.totalNap)}</div>
+                        </div>
+                        <div>
+                            <div class="label-meta">Meta 10,000 NAP</div>
+                            <div class="barra-meta">
+                                <div class="barra-fondo">
+                                    <div class="barra-lleno ${napClase}" style="width: ${anchoNap}%;"></div>
+                                </div>
+                                <span class="porcentaje ${napClase}">${porcentajeNap.toFixed(1)}%</span>
+                                <span class="faltante ${napClase}">${faltanteTexto}</span>
+                            </div>
+                        </div>
+                        <div class="extra-metrics">
+                            <div class="metric-item">
+                                <i class="fas fa-file-invoice"></i>
+                                <span class="metric-label">Pólizas</span>
+                                <span class="metric-value">${info.totalPolizas}</span>
+                            </div>
+                            <div class="metric-item">
+                                <i class="fas fa-tag"></i>
+                                <span class="metric-label">Producto estrella</span>
+                                <span class="metric-value">${escHtml(estrella)}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <span class="label">Bono Producción</span>
+                            ${bonoHtml}
+                        </div>
+                        <div class="row">
+                            <span class="label">Persistencia</span>
+                            <span class="persistencia ${persistenciaClase}">${detallePersistencia}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            agentsGrid.innerHTML = html;
+        }
+
+        async function init() {
+            agentsGrid.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-pulse"></i>Cargando agentes...</div>`;
+
+            const data = await fetchData();
+            if (data && data.length > 0) {
+                allData = data;
+                initMultiselectEvents();
+                actualizarBadgesHealthSpring();
+
+                const mesActual = obtenerMesActual();
+                filterMes.value = String(mesActual);
+
+                filterMes.addEventListener('change', actualizarMesSeleccionado);
+                filterAgente.addEventListener('change', applyFilters);
+
+                clearBtn.addEventListener('click', () => {
+                    filterAgente.value = '';
+                    const productos = [...new Set(allData.map(r => r.PRODUCTO).filter(Boolean))].sort();
+                    const estatuses = [...new Set(allData.map(r => r.ESTATUS).filter(Boolean))].sort();
+                    productosSeleccionados = productos.slice();
+                    estatusSeleccionados = estatuses.slice();
+
+                    document.querySelectorAll('#optionsProducto input[type="checkbox"]').forEach(cb => {
+                        cb.checked = cb.id === 'todos_producto';
+                    });
+                    document.querySelectorAll('#optionsEstatus input[type="checkbox"]').forEach(cb => {
+                        cb.checked = cb.id === 'todos_estatus';
+                    });
+                    updateSelectedTextProducto();
+                    updateSelectedTextEstatus();
+
+                    const mesActual2 = obtenerMesActual();
+                    filterMes.value = String(mesActual2);
+                    actualizarMesSeleccionado();
+                });
+
+                actualizarMesSeleccionado();
+
+            } else {
+                renderDashboard([]);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
