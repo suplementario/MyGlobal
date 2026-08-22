@@ -455,9 +455,10 @@
         }
 
         .meta-center h2 {
-            font-size: 24px;
+            font-size: 28px;
             color: var(--azul-oscuro);
             margin: 0;
+            letter-spacing: 1px;
         }
 
         .meta-center h2 span {
@@ -800,6 +801,10 @@
             margin-bottom: 2px;
         }
 
+        .agent-card .label-meta.bono {
+            color: var(--azul-oscuro);  /* Cambiado de oro a azul oscuro */
+        }
+
         .barra-meta {
             display: flex;
             align-items: center;
@@ -827,6 +832,14 @@
             background: var(--verde-meta);
         }
 
+        .barra-meta .barra-lleno.bono {
+            background: var(--oro-base);
+        }
+
+        .barra-meta .barra-lleno.bono.completo {
+            background: var(--verde-meta);
+        }
+
         .barra-meta .porcentaje {
             font-weight: 700;
             font-size: 14px;
@@ -839,12 +852,29 @@
             color: var(--verde-meta);
         }
 
+        .barra-meta .porcentaje.bono {
+            color: var(--oro-base);
+        }
+
+        .barra-meta .porcentaje.bono.completo {
+            color: var(--verde-meta);
+        }
+
         .barra-meta .faltante {
             font-weight: 600;
             font-size: 13px;
             color: var(--azul-claro);
         }
+
         .barra-meta .faltante.completo {
+            color: var(--verde-meta);
+        }
+
+        .barra-meta .faltante.bono {
+            color: var(--oro-base);
+        }
+
+        .barra-meta .faltante.bono.completo {
             color: var(--verde-meta);
         }
 
@@ -1046,7 +1076,7 @@
             </div>
 
             <div class="meta-center">
-                <h2>Meta mensual: <span>10,000 NAP</span> por agente</h2>
+                <h2>PRODUCCION GENERAL</h2>
                 <p class="tiempo-texto" id="mensajeTiempo">Tiempo restante para terminar el mes:</p>
                 <div class="countdown-grid">
                     <div class="time-box"><span id="days">00</span><label>Días</label></div>
@@ -1119,6 +1149,8 @@
             8: { inicio: new Date(2026, 7, 3), fin: new Date(2026, 8, 6) }
         };
 
+        const PRODUCTOS_POR_DEFECTO = ['ACCIDENT', 'CANCER', 'HEART', 'INDEMNITY', 'DVH'];
+
         const $ = (id) => document.getElementById(id);
         const recordCount = $('recordCount');
         const totalNapGlobal = $('totalNapGlobal');
@@ -1157,6 +1189,7 @@
         let selectedStart = null;
         let selectedEnd = null;
         let mesSeleccionado = 7;
+        let productKey = 'PRODUCTO';
 
         let productosSeleccionados = [];
         let estatusSeleccionados = [];
@@ -1312,7 +1345,8 @@
                 inicioDate.setHours(0, 0, 0, 0);
                 const finDate = new Date(fin);
                 finDate.setHours(23, 59, 59, 999);
-                let estado = '', clase = '';
+                let estado = '',
+                    clase = '';
                 if (hoy < inicioDate) {
                     estado = 'No Iniciado';
                     clase = 'no-iniciado';
@@ -1342,9 +1376,38 @@
                 allData = Array.isArray(json) ? json : (json.data || []);
                 console.log('📊 Datos cargados:', allData.length, 'registros');
 
-                const productos = [...new Set(allData.map(r => r.PRODUCTO).filter(Boolean))].sort();
+                if (allData.length > 0) {
+                    const sample = allData[0];
+                    console.log('🔍 Primer registro:', sample);
+                    console.log('📋 Columnas disponibles:', Object.keys(sample));
+                    const foundKey = Object.keys(sample).find(k => k.toUpperCase() === 'PRODUCTO');
+                    if (foundKey) {
+                        productKey = foundKey;
+                        console.log('✅ Clave de producto detectada:', productKey);
+                    } else {
+                        console.error('❌ No se encontró columna de producto');
+                        agentsGrid.innerHTML =
+                            `<div class="no-agentes">Error: columna PRODUCTO no encontrada. Columnas: ${Object.keys(sample).join(', ')}</div>`;
+                        return [];
+                    }
+                } else {
+                    return [];
+                }
+
+                const productos = [...new Set(allData.map(r => r[productKey]).filter(Boolean))].sort();
+                console.log('📦 Productos encontrados:', productos);
+
+                productosSeleccionados = productos.filter(p => {
+                    const pUpper = p.trim().toUpperCase();
+                    return PRODUCTOS_POR_DEFECTO.includes(pUpper);
+                });
+
+                if (productosSeleccionados.length === 0) {
+                    productosSeleccionados = productos.slice();
+                }
+                console.log('✅ Productos seleccionados por defecto:', productosSeleccionados);
+
                 const estatuses = [...new Set(allData.map(r => r.ESTATUS).filter(Boolean))].sort();
-                productosSeleccionados = productos.slice();
                 estatusSeleccionados = estatuses.slice();
 
                 return allData;
@@ -1399,7 +1462,7 @@
             datosFiltrados.forEach(row => {
                 const estatus = (row.ESTATUS || '').toLowerCase();
                 const isActive = estatus.includes('active');
-                const isDvh = esDVH(row.PRODUCTO);
+                const isDvh = esDVH(row[productKey]);
                 if (!isActive && !isDvh) return;
 
                 const agente = row.AGENTE || 'Sin nombre';
@@ -1462,23 +1525,37 @@
             });
         }
 
-        function populateFilterOptions(data) {
-            const setOptions = (select, values) => {
-                const current = select.value;
-                select.innerHTML = '<option value="">Todos</option>';
-                values.forEach(v => {
-                    const opt = document.createElement('option');
-                    opt.value = v;
-                    opt.textContent = v;
-                    select.appendChild(opt);
-                });
-                if ([...select.options].some(o => o.value === current)) select.value = current;
-            };
-            setOptions(filterAgente, [...new Set(data.map(r => r.AGENTE).filter(Boolean))].sort());
+        function populateFilterOptions() {
+            if (!allData || allData.length === 0) return;
 
-            const productos = [...new Set(data.map(r => r.PRODUCTO).filter(Boolean))].sort();
+            // Agentes
+            const allAgentes = [...new Set(allData.map(r => r.AGENTE).filter(Boolean))].sort();
+            const currentAgente = filterAgente.value;
+            filterAgente.innerHTML = '<option value="">Todos</option>';
+            allAgentes.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                filterAgente.appendChild(opt);
+            });
+            if ([...filterAgente.options].some(o => o.value === currentAgente)) {
+                filterAgente.value = currentAgente;
+            }
+
+            // Productos
+            const productos = [...new Set(allData.map(r => r[productKey]).filter(Boolean))].sort();
             const optionsContainer = optionsProducto;
             optionsContainer.innerHTML = '';
+
+            if (productosSeleccionados.length === 0) {
+                productosSeleccionados = productos.slice();
+            } else {
+                productosSeleccionados = productosSeleccionados.filter(p => productos.includes(p));
+                if (productosSeleccionados.length === 0) {
+                    productosSeleccionados = productos.slice();
+                }
+            }
+
             const todosDiv = document.createElement('div');
             todosDiv.className = 'option-item todos';
             const todosCheck = document.createElement('input');
@@ -1509,30 +1586,34 @@
             });
 
             optionsContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.addEventListener('change', function(e) {
-                    e.stopPropagation();
-                    const isTodos = this.id === 'todos_producto';
-                    if (isTodos) {
-                        const allChecks = optionsContainer.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
-                        allChecks.forEach(c => c.checked = this.checked);
-                        productosSeleccionados = this.checked ? productos.slice() : [];
-                    } else {
-                        const todosCheckbox = optionsContainer.querySelector('#todos_producto');
-                        if (!this.checked && todosCheckbox) todosCheckbox.checked = false;
-                        const individualChecks = optionsContainer.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
-                        const allChecked = Array.from(individualChecks).every(c => c.checked);
-                        if (allChecked && todosCheckbox) todosCheckbox.checked = true;
-                        const selected = [];
-                        individualChecks.forEach(c => { if (c.checked) selected.push(c.value); });
-                        productosSeleccionados = selected;
-                    }
-                    updateSelectedTextProducto();
-                    applyFilters();
-                });
+                cb.removeEventListener('change', handleProductoChange);
+                cb.addEventListener('change', handleProductoChange);
             });
+
+            function handleProductoChange(e) {
+                e.stopPropagation();
+                const isTodos = this.id === 'todos_producto';
+                if (isTodos) {
+                    const allChecks = optionsContainer.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
+                    allChecks.forEach(c => c.checked = this.checked);
+                    productosSeleccionados = this.checked ? productos.slice() : [];
+                } else {
+                    const todosCheckbox = optionsContainer.querySelector('#todos_producto');
+                    if (!this.checked && todosCheckbox) todosCheckbox.checked = false;
+                    const individualChecks = optionsContainer.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
+                    const allChecked = Array.from(individualChecks).every(c => c.checked);
+                    if (allChecked && todosCheckbox) todosCheckbox.checked = true;
+                    const selected = [];
+                    individualChecks.forEach(c => { if (c.checked) selected.push(c.value); });
+                    productosSeleccionados = selected;
+                }
+                updateSelectedTextProducto();
+                applyFilters();
+            }
             updateSelectedTextProducto();
 
-            const estatuses = [...new Set(data.map(r => r.ESTATUS).filter(Boolean))].sort();
+            // Estatus
+            const estatuses = [...new Set(allData.map(r => r.ESTATUS).filter(Boolean))].sort();
             const optionsContainerE = optionsEstatus;
             optionsContainerE.innerHTML = '';
             const todosDivE = document.createElement('div');
@@ -1565,33 +1646,38 @@
             });
 
             optionsContainerE.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.addEventListener('change', function(e) {
-                    e.stopPropagation();
-                    const isTodos = this.id === 'todos_estatus';
-                    if (isTodos) {
-                        const allChecks = optionsContainerE.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
-                        allChecks.forEach(c => c.checked = this.checked);
-                        estatusSeleccionados = this.checked ? estatuses.slice() : [];
-                    } else {
-                        const todosCheckbox = optionsContainerE.querySelector('#todos_estatus');
-                        if (!this.checked && todosCheckbox) todosCheckbox.checked = false;
-                        const individualChecks = optionsContainerE.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
-                        const allChecked = Array.from(individualChecks).every(c => c.checked);
-                        if (allChecked && todosCheckbox) todosCheckbox.checked = true;
-                        const selected = [];
-                        individualChecks.forEach(c => { if (c.checked) selected.push(c.value); });
-                        estatusSeleccionados = selected;
-                    }
-                    updateSelectedTextEstatus();
-                    applyFilters();
-                });
+                cb.removeEventListener('change', handleEstatusChange);
+                cb.addEventListener('change', handleEstatusChange);
             });
+
+            function handleEstatusChange(e) {
+                e.stopPropagation();
+                const isTodos = this.id === 'todos_estatus';
+                if (isTodos) {
+                    const allChecks = optionsContainerE.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
+                    allChecks.forEach(c => c.checked = this.checked);
+                    estatusSeleccionados = this.checked ? estatuses.slice() : [];
+                } else {
+                    const todosCheckbox = optionsContainerE.querySelector('#todos_estatus');
+                    if (!this.checked && todosCheckbox) todosCheckbox.checked = false;
+                    const individualChecks = optionsContainerE.querySelectorAll('input[type="checkbox"]:not([id*="todos"])');
+                    const allChecked = Array.from(individualChecks).every(c => c.checked);
+                    if (allChecked && todosCheckbox) todosCheckbox.checked = true;
+                    const selected = [];
+                    individualChecks.forEach(c => { if (c.checked) selected.push(c.value); });
+                    estatusSeleccionados = selected;
+                }
+                updateSelectedTextEstatus();
+                applyFilters();
+            }
             updateSelectedTextEstatus();
         }
 
         function updateSelectedTextProducto() {
-            const productos = [...new Set(allData.map(r => r.PRODUCTO).filter(Boolean))].sort();
-            if (productosSeleccionados.length === 0 || productosSeleccionados.length === productos.length) {
+            const productos = [...new Set(allData.map(r => r[productKey]).filter(Boolean))].sort();
+            if (productosSeleccionados.length === 0) {
+                selectedTextProducto.textContent = 'Ninguno';
+            } else if (productosSeleccionados.length === productos.length) {
                 selectedTextProducto.textContent = 'Todos';
             } else if (productosSeleccionados.length <= 2) {
                 selectedTextProducto.textContent = productosSeleccionados.join(', ');
@@ -1602,7 +1688,9 @@
 
         function updateSelectedTextEstatus() {
             const estatuses = [...new Set(allData.map(r => r.ESTATUS).filter(Boolean))].sort();
-            if (estatusSeleccionados.length === 0 || estatusSeleccionados.length === estatuses.length) {
+            if (estatusSeleccionados.length === 0) {
+                selectedTextEstatus.textContent = 'Ninguno';
+            } else if (estatusSeleccionados.length === estatuses.length) {
                 selectedTextEstatus.textContent = 'Todos';
             } else if (estatusSeleccionados.length <= 2) {
                 selectedTextEstatus.textContent = estatusSeleccionados.join(', ');
@@ -1636,10 +1724,12 @@
                 periodoBadge.textContent = `HealthSpring 6 (${inicioStr} – ${finStr})`;
             } else if (mes === 7) {
                 const finReal = fin < MESES_HEALTHSPRING[7].fin ? ` (hasta ${finStr})` : '';
-                periodoBadge.textContent = `HealthSpring 7 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[7].fin)})${finReal}`;
+                periodoBadge.textContent =
+                    `HealthSpring 7 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[7].fin)})${finReal}`;
             } else if (mes === 8) {
                 const finReal = fin < MESES_HEALTHSPRING[8].fin ? ` (hasta ${finStr})` : '';
-                periodoBadge.textContent = `HealthSpring 8 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[8].fin)})${finReal}`;
+                periodoBadge.textContent =
+                    `HealthSpring 8 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[8].fin)})${finReal}`;
             }
 
             footerNote.innerHTML = `<i class="far fa-calendar-alt"></i> Datos agrupados por agente · Mes ${mesTexto} (2026)`;
@@ -1657,7 +1747,7 @@
 
             let filtered = allData.filter(row => {
                 if (agenteVal && row.AGENTE !== agenteVal) return false;
-                if (productoVal.length > 0 && !productoVal.includes(row.PRODUCTO)) return false;
+                if (productoVal.length > 0 && !productoVal.includes(row[productKey])) return false;
                 if (estatusVal.length > 0 && !estatusVal.includes(row.ESTATUS)) return false;
                 return true;
             });
@@ -1698,7 +1788,7 @@
             totalNapGlobal.textContent = formatNumber(totalNap);
             totalPolizasGlobal.textContent = totalPolizas;
 
-            populateFilterOptions(data);
+            populateFilterOptions();
             renderAgentCards(data);
         }
 
@@ -1726,20 +1816,18 @@
                 agentMap[name].totalPolizas += cantidad;
                 agentMap[name].totalNap += nap;
 
-                const estatus = (r.ESTATUS || '').toLowerCase();
-                const esActivaOPendiente = estatus.includes('active') || estatus.includes('pendiente');
-                const noEsDVH = !esDVH(r.PRODUCTO);
-                if (esActivaOPendiente && noEsDVH) {
+                if (!esDVH(r[productKey])) {
                     agentMap[name].napParaBono += nap;
                 }
 
+                const estatus = (r.ESTATUS || '').toLowerCase();
                 const esNoPersistente = estatus.includes('termin') || estatus.includes('suspend') ||
                     estatus.includes('cancel') || estatus.includes('lapse');
                 if (esNoPersistente) {
                     agentMap[name].polizasNoPersistentes += cantidad;
                 }
 
-                const prod = r.PRODUCTO || 'Sin Producto';
+                const prod = r[productKey] || 'Sin Producto';
                 if (!agentMap[name].productos[prod]) {
                     agentMap[name].productos[prod] = 0;
                 }
@@ -1754,19 +1842,23 @@
                 const anchoNap = Math.min(porcentajeNap, 300);
                 const cumplioNap = info.totalNap >= META_NAP;
                 const napClase = cumplioNap ? 'completo' : '';
+                const faltanteNap = Math.max(0, META_NAP - info.totalNap);
+                const faltanteNapTexto = cumplioNap ? 'Meta alcanzada' : `Restante: ${formatNumber(faltanteNap)}`;
 
-                const faltante = Math.max(0, META_NAP - info.totalNap);
-                const faltanteTexto = cumplioNap ? 'Meta alcanzada' : `Faltan: ${formatNumber(faltante)}`;
-
+                const porcentajeBono = (info.napParaBono / META_NAP) * 100;
+                const anchoBono = Math.min(porcentajeBono, 300);
                 const cumplioBono = info.napParaBono >= META_NAP;
-                const bonoHtml = cumplioBono ? `<span class="bono-check">✔</span>` : '';
+                const bonoClase = cumplioBono ? 'completo' : '';
+                const faltanteBono = Math.max(0, META_NAP - info.napParaBono);
+                const faltanteBonoTexto = cumplioBono ? 'Meta alcanzada' : `Restante: ${formatNumber(faltanteBono)}`;
 
                 let persistencia = 0;
                 let detallePersistencia = '(0/0)';
                 let persistenciaClase = '';
                 if (info.totalPolizas > 0) {
                     persistencia = ((info.totalPolizas - info.polizasNoPersistentes) / info.totalPolizas) * 100;
-                    detallePersistencia = `(${info.totalPolizas}/${info.polizasNoPersistentes}) ${persistencia.toFixed(1)}%`;
+                    detallePersistencia =
+                        `(${info.totalPolizas}/${info.polizasNoPersistentes}) ${persistencia.toFixed(1)}%`;
                     persistenciaClase = persistencia < 75 ? 'bajo' : '';
                 } else {
                     detallePersistencia = '(0/0) 0.0%';
@@ -1789,16 +1881,29 @@
                             <div class="id">ID: ${escHtml(info.id)}</div>
                             <div class="nap-total">NAP Total: ${formatNumber(info.totalNap)}</div>
                         </div>
+
                         <div>
-                            <div class="label-meta">Meta 10,000 NAP</div>
+                            <div class="label-meta">Producción General</div>
                             <div class="barra-meta">
                                 <div class="barra-fondo">
                                     <div class="barra-lleno ${napClase}" style="width: ${anchoNap}%;"></div>
                                 </div>
                                 <span class="porcentaje ${napClase}">${porcentajeNap.toFixed(1)}%</span>
-                                <span class="faltante ${napClase}">${faltanteTexto}</span>
+                                <span class="faltante ${napClase}">${faltanteNapTexto}</span>
                             </div>
                         </div>
+
+                        <div>
+                            <div class="label-meta bono">META BONO</div>
+                            <div class="barra-meta">
+                                <div class="barra-fondo">
+                                    <div class="barra-lleno bono ${bonoClase}" style="width: ${anchoBono}%;"></div>
+                                </div>
+                                <span class="porcentaje bono ${bonoClase}">${porcentajeBono.toFixed(1)}%</span>
+                                <span class="faltante bono ${bonoClase}">${faltanteBonoTexto}</span>
+                            </div>
+                        </div>
+
                         <div class="extra-metrics">
                             <div class="metric-item">
                                 <i class="fas fa-file-invoice"></i>
@@ -1811,10 +1916,12 @@
                                 <span class="metric-value">${escHtml(estrella)}</span>
                             </div>
                         </div>
+
                         <div class="row">
                             <span class="label">Bono Producción</span>
-                            ${bonoHtml}
+                            ${cumplioBono ? '<span class="bono-check">✔</span>' : ''}
                         </div>
+
                         <div class="row">
                             <span class="label">Persistencia</span>
                             <span class="persistencia ${persistenciaClase}">${detallePersistencia}</span>
@@ -1843,16 +1950,31 @@
 
                 clearBtn.addEventListener('click', () => {
                     filterAgente.value = '';
-                    const productos = [...new Set(allData.map(r => r.PRODUCTO).filter(Boolean))].sort();
+                    const productos = [...new Set(allData.map(r => r[productKey]).filter(Boolean))].sort();
+                    productosSeleccionados = productos.filter(p => {
+                        const pUpper = p.trim().toUpperCase();
+                        return PRODUCTOS_POR_DEFECTO.includes(pUpper);
+                    });
+                    if (productosSeleccionados.length === 0) {
+                        productosSeleccionados = productos.slice();
+                    }
+
                     const estatuses = [...new Set(allData.map(r => r.ESTATUS).filter(Boolean))].sort();
-                    productosSeleccionados = productos.slice();
                     estatusSeleccionados = estatuses.slice();
 
                     document.querySelectorAll('#optionsProducto input[type="checkbox"]').forEach(cb => {
-                        cb.checked = cb.id === 'todos_producto';
+                        if (cb.id === 'todos_producto') {
+                            cb.checked = (productosSeleccionados.length === productos.length && productos.length > 0);
+                        } else {
+                            cb.checked = productosSeleccionados.includes(cb.value);
+                        }
                     });
                     document.querySelectorAll('#optionsEstatus input[type="checkbox"]').forEach(cb => {
-                        cb.checked = cb.id === 'todos_estatus';
+                        if (cb.id === 'todos_estatus') {
+                            cb.checked = (estatusSeleccionados.length === estatuses.length && estatuses.length > 0);
+                        } else {
+                            cb.checked = estatusSeleccionados.includes(cb.value);
+                        }
                     });
                     updateSelectedTextProducto();
                     updateSelectedTextEstatus();
