@@ -393,59 +393,6 @@
             text-transform: uppercase;
         }
 
-        .meta-top .healthspring-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-        }
-
-        .meta-top .healthspring-badge {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            padding: 5px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--texto-principal);
-        }
-
-        .meta-top .healthspring-badge i {
-            margin-right: 4px;
-            color: var(--azul-claro);
-        }
-
-        .healthspring-badge.terminado {
-            border-color: var(--rojo-alerta);
-            color: var(--rojo-alerta);
-            background: rgba(220, 53, 69, 0.04);
-        }
-        .healthspring-badge.terminado i {
-            color: var(--rojo-alerta);
-        }
-
-        .healthspring-badge.en-curso {
-            border-color: var(--azul-claro);
-            color: var(--azul-claro);
-            background: rgba(0, 85, 255, 0.04);
-        }
-        .healthspring-badge.en-curso i {
-            color: var(--azul-claro);
-        }
-
-        .healthspring-badge.no-iniciado {
-            border-color: var(--texto-secundario);
-            color: var(--texto-secundario);
-            background: rgba(74, 92, 122, 0.04);
-        }
-        .healthspring-badge.no-iniciado i {
-            color: var(--texto-secundario);
-        }
-
         .meta-center {
             display: flex;
             flex-direction: column;
@@ -513,13 +460,6 @@
             .meta-top .info-mes-grid {
                 justify-content: center;
             }
-            .meta-top .healthspring-wrapper {
-                align-items: center;
-            }
-            .meta-top .healthspring-badge {
-                white-space: normal;
-                text-align: center;
-            }
             .countdown-grid {
                 gap: 10px;
                 flex-wrap: wrap;
@@ -544,6 +484,71 @@
             }
             .time-box span {
                 font-size: 18px;
+            }
+        }
+
+        /* ===== TABLA DE REFERENCIA DE MESES ===== */
+        .tabla-meses-container {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--sombra);
+            overflow-x: auto;
+        }
+
+        .tabla-meses {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: center;
+            color: var(--texto-principal);
+        }
+
+        .tabla-meses th {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            padding: 10px 8px;
+            color: var(--oro-base);
+            border-bottom: 2px solid var(--oro-base);
+        }
+
+        .tabla-meses td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tabla-meses tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tabla-meses td:first-child {
+            font-weight: 700;
+            color: var(--azul-oscuro);
+        }
+
+        .tabla-meses td small {
+            display: block;
+            font-size: 11px;
+            color: var(--texto-secundario);
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        .tabla-meses td:not(:first-child) {
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .tabla-meses {
+                font-size: 12px;
+            }
+            .tabla-meses th,
+            .tabla-meses td {
+                padding: 8px 4px;
             }
         }
 
@@ -1027,10 +1032,10 @@
             <div class="group">
                 <label><i class="fas fa-calendar-alt"></i> Mes HealthSpring</label>
                 <select id="filterMes">
-                    <option value="6">Mes 6 (01/06 – 05/07)</option>
+                    <!-- Mes 6 eliminado -->
                     <option value="7" selected>Mes 7 (06/07 – 02/08)</option>
                     <option value="8">Mes 8 (03/08 – 06/09)</option>
-                    <option value="9">Mes 9 (07/09 – 04/10)</option>   <!-- NUEVO -->
+                    <option value="9">Mes 9 (07/09 – 04/10)</option>
                 </select>
             </div>
 
@@ -1071,9 +1076,7 @@
                     <div class="info-badge" id="periodoBadge">HealthSpring 7 (06/07 – 02/08)</div>
                     <div class="info-badge" id="semanasMes">Semanas del Mes: 4</div>
                 </div>
-                <div class="healthspring-wrapper" id="healthspringBadges">
-                    <!-- Los badges se generan dinámicamente con JS -->
-                </div>
+                <!-- Se eliminó el healthspring-wrapper con los badges -->
             </div>
 
             <div class="meta-center">
@@ -1085,6 +1088,28 @@
                     <div class="time-box"><span id="mins">00</span><label>Minutos</label></div>
                 </div>
             </div>
+        </div>
+
+        <!-- ===== TABLA DE REFERENCIA DE MESES ===== -->
+        <div class="tabla-meses-container">
+            <table class="tabla-meses">
+                <thead>
+                    <tr>
+                        <th>Año / Mes</th>
+                        <th>Mes 7</th>
+                        <th>Mes 8</th>
+                        <th>Mes 9</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>3Q / 2026</td>
+                        <td>JUL 6 – AUG 2<br><small>(4 WEEKS)</small></td>
+                        <td>AUG 3 – SEP 6<br><small>(5 SEMANAS)</small></td>
+                        <td>SEP 7 – OCT 4<br><small>(4 SEMANAS)</small></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- ===== INDICADORES ===== -->
@@ -1144,9 +1169,8 @@
             'https://script.google.com/macros/s/AKfycby_K_tPPNRJXvhj8IMYlCHSCmjFl1zXzYrMTikTwRSBDTO1GHlmuAVCwfl-VfOhS7uZwA/exec';
         const META_NAP = 10000;
 
-        // ===== MODIFICACIÓN: AÑADIDO MES 9 =====
+        // ===== MES 6 ELIMINADO =====
         const MESES_HEALTHSPRING = {
-            6: { inicio: new Date(2026, 5, 1), fin: new Date(2026, 6, 5) },
             7: { inicio: new Date(2026, 6, 6), fin: new Date(2026, 7, 2) },
             8: { inicio: new Date(2026, 7, 3), fin: new Date(2026, 8, 6) },
             9: { inicio: new Date(2026, 8, 7), fin: new Date(2026, 9, 4) }
@@ -1186,7 +1210,6 @@
         const minsSpan = $('mins');
         const semanasBadge = $('semanasMes');
         const footerNote = $('footerNote');
-        const healthspringBadges = $('healthspringBadges');
 
         let allData = [];
         let selectedStart = null;
@@ -1334,41 +1357,6 @@
             if (!rango) return;
             const semanas = calcularSemanas(rango.inicio, rango.fin);
             semanasBadge.textContent = `Semanas del Mes: ${semanas}`;
-        }
-
-        function actualizarBadgesHealthSpring() {
-            if (!healthspringBadges) return;
-            const hoy = new Date();
-            hoy.setHours(0, 0, 0, 0);
-            let html = '';
-            const meses = Object.keys(MESES_HEALTHSPRING).map(Number).sort((a, b) => a - b);
-            for (const m of meses) {
-                const { inicio, fin } = MESES_HEALTHSPRING[m];
-                const inicioDate = new Date(inicio);
-                inicioDate.setHours(0, 0, 0, 0);
-                const finDate = new Date(fin);
-                finDate.setHours(23, 59, 59, 999);
-                let estado = '',
-                    clase = '';
-                if (hoy < inicioDate) {
-                    estado = 'No Iniciado';
-                    clase = 'no-iniciado';
-                } else if (hoy >= inicioDate && hoy <= finDate) {
-                    estado = 'En Curso';
-                    clase = 'en-curso';
-                } else {
-                    estado = 'Terminado';
-                    clase = 'terminado';
-                }
-                const inicioStr = formatDateDisplay(inicioDate);
-                const finStr = formatDateDisplay(finDate);
-                html += `
-                    <div class="healthspring-badge ${clase}">
-                        <i class="fas fa-calendar-check"></i> HealthSpring Mes ${m}: ${inicioStr} – ${finStr} ${estado}
-                    </div>
-                `;
-            }
-            healthspringBadges.innerHTML = html;
         }
 
         async function fetchData() {
@@ -1711,7 +1699,7 @@
             let inicio = new Date(rango.inicio);
             let fin = new Date(rango.fin);
 
-            // ===== MODIFICACIÓN: se incluye el mes 9 en el ajuste de fecha fin =====
+            // Ajuste de fecha fin para meses 7, 8 y 9
             if (mes === 7 || mes === 8 || mes === 9) {
                 const hoy = new Date();
                 hoy.setHours(0, 0, 0, 0);
@@ -1724,10 +1712,8 @@
             const inicioStr = formatDateDisplay(inicio);
             const finStr = formatDateDisplay(fin);
             const mesTexto = mes;
-            // ===== MODIFICACIÓN: se añade el bloque para mes 9 =====
-            if (mes === 6) {
-                periodoBadge.textContent = `HealthSpring 6 (${inicioStr} – ${finStr})`;
-            } else if (mes === 7) {
+            // Solo se manejan los meses 7, 8 y 9
+            if (mes === 7) {
                 const finReal = fin < MESES_HEALTHSPRING[7].fin ? ` (hasta ${finStr})` : '';
                 periodoBadge.textContent = `HealthSpring 7 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[7].fin)})${finReal}`;
             } else if (mes === 8) {
@@ -1946,7 +1932,6 @@
             if (data && data.length > 0) {
                 allData = data;
                 initMultiselectEvents();
-                actualizarBadgesHealthSpring();
 
                 const mesActual = obtenerMesActual();
                 filterMes.value = String(mesActual);
