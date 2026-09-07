@@ -1030,6 +1030,7 @@
                     <option value="6">Mes 6 (01/06 – 05/07)</option>
                     <option value="7" selected>Mes 7 (06/07 – 02/08)</option>
                     <option value="8">Mes 8 (03/08 – 06/09)</option>
+                    <option value="9">Mes 9 (07/09 – 04/10)</option>   <!-- NUEVO -->
                 </select>
             </div>
 
@@ -1143,10 +1144,12 @@
             'https://script.google.com/macros/s/AKfycby_K_tPPNRJXvhj8IMYlCHSCmjFl1zXzYrMTikTwRSBDTO1GHlmuAVCwfl-VfOhS7uZwA/exec';
         const META_NAP = 10000;
 
+        // ===== MODIFICACIÓN: AÑADIDO MES 9 =====
         const MESES_HEALTHSPRING = {
             6: { inicio: new Date(2026, 5, 1), fin: new Date(2026, 6, 5) },
             7: { inicio: new Date(2026, 6, 6), fin: new Date(2026, 7, 2) },
-            8: { inicio: new Date(2026, 7, 3), fin: new Date(2026, 8, 6) }
+            8: { inicio: new Date(2026, 7, 3), fin: new Date(2026, 8, 6) },
+            9: { inicio: new Date(2026, 8, 7), fin: new Date(2026, 9, 4) }
         };
 
         const PRODUCTOS_POR_DEFECTO = ['ACCIDENT', 'CANCER', 'HEART', 'INDEMNITY', 'DVH'];
@@ -1708,7 +1711,8 @@
             let inicio = new Date(rango.inicio);
             let fin = new Date(rango.fin);
 
-            if (mes === 7 || mes === 8) {
+            // ===== MODIFICACIÓN: se incluye el mes 9 en el ajuste de fecha fin =====
+            if (mes === 7 || mes === 8 || mes === 9) {
                 const hoy = new Date();
                 hoy.setHours(0, 0, 0, 0);
                 if (hoy < fin) fin = hoy;
@@ -1720,16 +1724,18 @@
             const inicioStr = formatDateDisplay(inicio);
             const finStr = formatDateDisplay(fin);
             const mesTexto = mes;
+            // ===== MODIFICACIÓN: se añade el bloque para mes 9 =====
             if (mes === 6) {
                 periodoBadge.textContent = `HealthSpring 6 (${inicioStr} – ${finStr})`;
             } else if (mes === 7) {
                 const finReal = fin < MESES_HEALTHSPRING[7].fin ? ` (hasta ${finStr})` : '';
-                periodoBadge.textContent =
-                    `HealthSpring 7 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[7].fin)})${finReal}`;
+                periodoBadge.textContent = `HealthSpring 7 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[7].fin)})${finReal}`;
             } else if (mes === 8) {
                 const finReal = fin < MESES_HEALTHSPRING[8].fin ? ` (hasta ${finStr})` : '';
-                periodoBadge.textContent =
-                    `HealthSpring 8 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[8].fin)})${finReal}`;
+                periodoBadge.textContent = `HealthSpring 8 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[8].fin)})${finReal}`;
+            } else if (mes === 9) {
+                const finReal = fin < MESES_HEALTHSPRING[9].fin ? ` (hasta ${finStr})` : '';
+                periodoBadge.textContent = `HealthSpring 9 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[9].fin)})${finReal}`;
             }
 
             footerNote.innerHTML = `<i class="far fa-calendar-alt"></i> Datos agrupados por agente · Mes ${mesTexto} (2026)`;
