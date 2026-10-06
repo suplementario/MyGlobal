@@ -520,9 +520,12 @@
             <div class="group">
                 <label><i class="fas fa-calendar-alt"></i> Mes HealthSpring</label>
                 <select id="filterMes">
-                    <option value="7" selected>Mes 7 (06/07 – 02/08)</option>
+                    <option value="7">Mes 7 (06/07 – 02/08)</option>
                     <option value="8">Mes 8 (03/08 – 06/09)</option>
                     <option value="9">Mes 9 (07/09 – 04/10)</option>
+                    <option value="10">Mes 10 (05/10 – 01/11)</option>
+                    <option value="11">Mes 11 (02/11 – 06/12)</option>
+                    <option value="12">Mes 12 (07/12 – 03/01/2027)</option>
                 </select>
             </div>
             <div class="group">
@@ -575,17 +578,17 @@
                 <thead>
                     <tr>
                         <th>Año / Mes</th>
-                        <th>Mes 7</th>
-                        <th>Mes 8</th>
-                        <th>Mes 9</th>
+                        <th>Mes 10</th>
+                        <th>Mes 11</th>
+                        <th>Mes 12</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>3Q / 2026</td>
-                        <td>JUL 6 – AUG 2<br><small>(4 WEEKS)</small></td>
-                        <td>AUG 3 – SEP 6<br><small>(5 SEMANAS)</small></td>
-                        <td>SEP 7 – OCT 4<br><small>(4 SEMANAS)</small></td>
+                        <td>4Q / 2026-2027</td>
+                        <td>OCT 5 – NOV 1<br><small>(4 SEMANAS)</small></td>
+                        <td>NOV 2 – DEC 6<br><small>(5 SEMANAS)</small></td>
+                        <td>DEC 7 – JAN 3<br><small>(4 SEMANAS)</small></td>
                     </tr>
                 </tbody>
             </table>
@@ -650,7 +653,10 @@
         const MESES_HEALTHSPRING = {
             7: { inicio: new Date(2026, 6, 6), fin: new Date(2026, 7, 2) },
             8: { inicio: new Date(2026, 7, 3), fin: new Date(2026, 8, 6) },
-            9: { inicio: new Date(2026, 8, 7), fin: new Date(2026, 9, 4) }
+            9: { inicio: new Date(2026, 8, 7), fin: new Date(2026, 9, 4) },
+            10: { inicio: new Date(2026, 9, 5), fin: new Date(2026, 10, 1) },
+            11: { inicio: new Date(2026, 10, 2), fin: new Date(2026, 11, 6) },
+            12: { inicio: new Date(2026, 11, 7), fin: new Date(2027, 0, 3) }
         };
 
         const PRODUCTOS_POR_DEFECTO = ['ACCIDENT', 'CANCER', 'HEART', 'INDEMNITY', 'DVH'];
@@ -1256,7 +1262,7 @@
             let inicio = new Date(rango.inicio);
             let fin = new Date(rango.fin);
 
-            if (mes === 7 || mes === 8 || mes === 9) {
+            if (mes >= 7 && mes <= 12) {
                 const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
                 if (hoy < fin) fin = hoy;
             }
@@ -1270,6 +1276,9 @@
             if (mes === 7) periodoBadge.textContent = `HealthSpring 7 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[7].fin)})`;
             else if (mes === 8) periodoBadge.textContent = `HealthSpring 8 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[8].fin)})`;
             else if (mes === 9) periodoBadge.textContent = `HealthSpring 9 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[9].fin)})`;
+            else if (mes === 10) periodoBadge.textContent = `HealthSpring 10 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[10].fin)})`;
+            else if (mes === 11) periodoBadge.textContent = `HealthSpring 11 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[11].fin)})`;
+            else if (mes === 12) periodoBadge.textContent = `HealthSpring 12 (${inicioStr} – ${formatDateDisplay(MESES_HEALTHSPRING[12].fin)})`;
 
             footerNote.innerHTML = `<i class="far fa-calendar-alt"></i> Datos agrupados por agente · Mes ${mesTexto} (2026)`;
 
@@ -1484,7 +1493,6 @@
                     actualizarMesSeleccionado();
                 });
 
-                // ⭐ NUEVO: click en el ícono de sync para forzar refresco
                 syncBtn.addEventListener('click', forceRefresh);
 
                 actualizarMesSeleccionado();
